@@ -1,17 +1,17 @@
-from .dependency import O0OOO00O0O0OOO0O0, O0OOOOOOO0O0O0OO0, O0OOO00O0O0O0O0O0, OO000OOOO000O0OOO
+from .dependency import TORCH_CONV, TORCH_BATCHNORM, TORCH_PRELU, TORCH_LINEAR
 
 def count_prunable_params(module):
-    if isinstance( module, ( O0OOO00O0O0OOO0O0, OO000OOOO000O0OOO) ):
+    if isinstance( module, ( TORCH_CONV, TORCH_LINEAR) ):
         num_params = module.weight.numel()
         if module.bias is not None:
             num_params += module.bias.numel()
         return num_params
-    elif isinstance( module, O0OOOOOOO0O0O0OO0 ):
+    elif isinstance( module, TORCH_BATCHNORM ):
         num_params = module.running_mean.numel() + module.running_var.numel()
         if module.affine:
             num_params+= module.weight.numel() + module.bias.numel()
         return num_params
-    elif isinstance( module, O0OOO00O0O0O0O0O0 ):
+    elif isinstance( module, TORCH_PRELU ):
         if len( module.weight )==1:
             return 0
         else:
@@ -20,13 +20,13 @@ def count_prunable_params(module):
         return 0
 
 def count_prunable_channels(module):
-    if isinstance( module, O0OOO00O0O0OOO0O0 ):
+    if isinstance( module, TORCH_CONV ):
         return module.weight.shape[0]
-    elif isinstance( module, OO000OOOO000O0OOO ):
+    elif isinstance( module, TORCH_LINEAR ):
         return module.out_features
-    elif isinstance( module, O0OOOOOOO0O0O0OO0 ):
+    elif isinstance( module, TORCH_BATCHNORM ):
         return module.num_features
-    elif isinstance( module, O0OOO00O0O0O0O0O0 ):
+    elif isinstance( module, TORCH_PRELU ):
         if len( module.weight )==1:
             return 0
         else:
